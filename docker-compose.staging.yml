@@ -7,9 +7,9 @@ services:
     ports:
       - "8501:8501"
     volumes:
+      - ./chroma-db:/app/chroma-db
       - ./data:/app/data
       - ./storage:/app/storage
-      - ./chroma-db:/app/chroma-db
     restart: unless-stopped
     networks:
       - legisbot-network

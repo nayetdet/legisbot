@@ -10,19 +10,16 @@ def main():
     docs = SimpleDirectoryReader(input_dir="./data", recursive=True).load_data()
     for doc in docs:
         doc.text_template = "Metadata:\n{metadata_str}\n---\nContent:\n{content}"
-        for metadata in ["page_label"]:
+        for metadata in ["filename", "page_label"]:
             if metadata not in doc.excluded_embed_metadata_keys:
                 doc.excluded_embed_metadata_keys.append(metadata)
 
     llm = Ollama(model="qwen:0.5b", request_timeout=6000)
-    text_splitter = SentenceSplitter(separator=" ", chunk_size=2048, chunk_overlap=256)
-    title_extractor = TitleExtractor(llm=llm, nodes=5)
-    qa_extractor = QuestionsAnsweredExtractor(llm=llm, questions=3)
     pipeline = IngestionPipeline(
         transformations=[
-            text_splitter,
-            title_extractor,
-            qa_extractor,
+            SentenceSplitter(separator=" ", chunk_size=1024, chunk_overlap=128),
+            TitleExtractor(llm=llm, nodes=5),
+            QuestionsAnsweredExtractor(llm=llm, questions=3)
         ]
     )
 

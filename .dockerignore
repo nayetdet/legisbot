@@ -1,8 +1,16 @@
+# App
+chroma-db/
+data/
+storage/
+
+# Script
+install.sh
+
 # Git
 .git
 .gitignore
 .gitattributes
-
+README.md
 
 # CI
 .codeclimate.yml
@@ -10,8 +18,9 @@
 .taskcluster.yml
 
 # Docker
+docker-compose.dev.yml
 docker-compose.staging.yml
-docker/app/Dockerfile
+docker/
 .docker
 .dockerignore
 
