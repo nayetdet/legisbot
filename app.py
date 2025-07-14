@@ -1,5 +1,4 @@
 import streamlit as st
-import time
 from rag import query_engine
 
 def main():
@@ -18,19 +17,16 @@ def main():
 
         response = query_engine.query(prompt)
         full_response = ""
+        message_placeholder = st.empty()
 
-        with st.chat_message("assistant"):
-            response_placeholder = st.empty()
-            for i in range(5):
-                response_placeholder.markdown(f"{'.' * (i % 4)}")
-                time.sleep(0.3)
+        if hasattr(response, "source_nodes") and len(response.source_nodes) > 0:
+            with st.chat_message("assistant"):
+                for chunk in response.response_gen:
+                    full_response += chunk
+                    message_placeholder.markdown(full_response + "▌")
+        else: full_response = "Não encontrei base suficiente para responder com precisão"
 
-            for chunk in response.response_gen:
-                full_response += chunk
-                response_placeholder.markdown(full_response + "▌")
-
-            response_placeholder.markdown(full_response)
-
+        message_placeholder.markdown(full_response)
         st.session_state["messages"].append({"role": "assistant", "content": full_response})
 
 if __name__ == "__main__":
