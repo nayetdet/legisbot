@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: legisbot
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./storage:/app/storage
+      - ./chroma-db:/app/chroma-db
+    restart: unless-stopped
+    networks:
+      - legisbot-network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: legisbot-ollama
+    tty: true
+    ports:
+      - "11434:11434"
+    entrypoint: >
+      /bin/sh -c '
+        ollama pull deepseek-r1:1.5b || true
+        ollama pull gwen:0.5b || true
+        exec ollama $0 "$@"
+      '
+    command: serve --port 11434
+    volumes:
+      - legisbot-ollama:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - legisbot-network
+
+volumes:
+    legisbot-ollama:
+
+networks:
+  legisbot-network:
