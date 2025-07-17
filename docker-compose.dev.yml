@@ -9,7 +9,6 @@ services:
       - "11434:11434"
     volumes:
       - legisbot-ollama:/root/.ollama
-    restart: unless-stopped
 
 volumes:
     legisbot-ollama:

@@ -3,7 +3,6 @@ from rag import query_engine
 
 def main():
     st.title("LegisBot")
-
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
 
@@ -27,7 +26,6 @@ def main():
                     message_placeholder.markdown(full_response + "▌")
             else: full_response = "Não encontrei base suficiente para responder com precisão."
             message_placeholder.markdown(full_response)
-
         st.session_state["messages"].append({"role": "assistant", "content": full_response})
 
 if __name__ == "__main__":

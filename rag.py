@@ -1,11 +1,10 @@
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 from llama_index.core import VectorStoreIndex, PromptTemplate
 from database import storage_context
+from embedding import embedding
 
 llm = Ollama(model="deepseek-r1:1.5b", request_timeout=6000)
-hf_embeddings = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
-index = VectorStoreIndex.from_vector_store(storage_context.vector_store, embed_model=hf_embeddings)
+index = VectorStoreIndex.from_vector_store(storage_context.vector_store, embed_model=embedding)
 
 template_str = """
 <wait>
