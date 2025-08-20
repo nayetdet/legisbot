@@ -1,9 +1,8 @@
-from abc import ABC
 from datetime import datetime, timezone
 from sqlalchemy import Integer, Column, DateTime
 from api.models import Base
 
-class BaseModel(Base, ABC):
+class BaseModel(Base):
     __abstract__ = True
 
     id = Column(Integer, primary_key=True, index=True)
