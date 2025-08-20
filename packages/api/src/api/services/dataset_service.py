@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import UploadFile
+from api.exceptions.dataset_exceptions import DatasetNotFoundException
 from api.mappers.dataset_mapper import DatasetMapper
 from api.models.dataset import Dataset
 from api.repositories.dataset_repository import DatasetRepository
@@ -11,7 +12,9 @@ class DatasetService:
     @staticmethod
     def get_by_id(dataset_id: int) -> Optional[DatasetResponseSchema]:
         dataset: Dataset = DatasetRepository.get_by_id(dataset_id)
-        return DatasetMapper.get_response_schema(dataset) if dataset is not None else None
+        if dataset is None:
+            raise DatasetNotFoundException()
+        return DatasetMapper.get_response_schema(dataset)
 
     @staticmethod
     def create(file: UploadFile) -> DatasetResponseSchema:
@@ -34,7 +37,7 @@ class DatasetService:
     def delete_by_id(dataset_id: int) -> None:
         dataset: Dataset = DatasetRepository.get_by_id(dataset_id)
         if dataset is None:
-            return
+            raise DatasetNotFoundException()
 
         DatasetRepository.delete_by_dataset(dataset)
         MinioService.delete_by_filename(dataset.name)

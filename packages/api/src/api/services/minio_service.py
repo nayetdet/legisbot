@@ -2,7 +2,7 @@ from io import BytesIO
 from time import time
 from fastapi import UploadFile
 from api.config import Config
-from api.deps.minio_instance import MinioInstance
+from api.deps.databases.minio_instance import MinioInstance
 
 class MinioService:
     @staticmethod

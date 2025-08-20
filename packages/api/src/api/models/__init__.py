@@ -1,4 +1,3 @@
-from sqlalchemy.orm import DeclarativeMeta
-from api.deps.postgres_instance import PostgresInstance
-
-Base: DeclarativeMeta = PostgresInstance.get_base()
+from .base_model import Base, BaseModel
+from .dataset import Dataset
+from .qa import QA

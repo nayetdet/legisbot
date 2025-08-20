@@ -1,5 +1,8 @@
 from os import getenv
 from typing import List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
     # API

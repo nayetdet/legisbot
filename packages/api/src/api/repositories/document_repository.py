@@ -1,8 +1,8 @@
 from typing import Sequence
 from llama_index.core import VectorStoreIndex
 from llama_index.core.schema import BaseNode
-from api.deps.chroma_instance import ChromaInstance
-from api.deps.ollama_instance import OllamaInstance
+from api.deps.databases.chroma_instance import ChromaInstance
+from api.deps.llms.ollama_instance import OllamaInstance
 
 class DocumentRepository:
     @staticmethod

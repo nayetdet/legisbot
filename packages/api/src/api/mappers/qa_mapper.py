@@ -1,13 +1,14 @@
+from typing import Optional
 from api.models.qa import QA
 from api.schemas.request.qa_request_schema import QARequestSchema
 from api.schemas.response.qa_response_schema import QAResponseSchema
 
 class QAMapper:
     @staticmethod
-    def to_qa(request: QARequestSchema) -> QA:
+    def to_qa(request: QARequestSchema, answer: Optional[str]) -> QA:
         return QA(
             question=request.question,
-            answer=request.answer
+            answer=answer
         )
 
     @staticmethod

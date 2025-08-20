@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from sqlalchemy import Integer, Column, DateTime
-from api.models import Base
+from api.deps.databases.postgres_instance import PostgresInstance
+
+Base = PostgresInstance.get_base()
 
 class BaseModel(Base):
     __abstract__ = True

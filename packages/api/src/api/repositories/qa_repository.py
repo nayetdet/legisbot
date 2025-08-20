@@ -1,5 +1,5 @@
 from typing import Optional
-from api.deps.postgres_instance import PostgresInstance
+from api.deps.databases.postgres_instance import PostgresInstance
 from api.models.qa import QA
 
 class QARepository:
@@ -13,6 +13,7 @@ class QARepository:
         with PostgresInstance.get_db() as session:
             session.add(qa)
             session.commit()
+            session.refresh(qa)
         return qa
 
     @staticmethod
@@ -24,3 +25,4 @@ class QARepository:
 
             session.delete(qa)
             session.commit()
+            session.refresh(qa)

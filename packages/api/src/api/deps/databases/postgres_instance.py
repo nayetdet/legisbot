@@ -1,4 +1,5 @@
 from typing import Generator
+from contextlib import contextmanager
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, DeclarativeMeta
@@ -14,6 +15,11 @@ class PostgresInstance:
         return cls.__base
 
     @classmethod
+    def get_engine(cls) -> Engine:
+        return cls.__engine
+
+    @classmethod
+    @contextmanager
     def get_db(cls) -> Generator[Session, None, None]:
         db: Session = cls.__session_local()
         try: yield db

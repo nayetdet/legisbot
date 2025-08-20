@@ -3,8 +3,8 @@ from llama_index.core import PromptTemplate, VectorStoreIndex
 from llama_index.core.base.base_retriever import BaseRetriever
 from llama_index.core.postprocessor import LLMRerank
 from llama_index.core.query_engine import RetrieverQueryEngine
-from api.deps.chroma_instance import ChromaInstance
-from api.deps.ollama_instance import OllamaInstance
+from api.deps.databases.chroma_instance import ChromaInstance
+from api.deps.llms.ollama_instance import OllamaInstance
 
 class OllamaQueryEngineInstance:
     __index: VectorStoreIndex = VectorStoreIndex.from_vector_store(ChromaInstance.get_vector_store(), embed_model=OllamaInstance.get_embedding())
