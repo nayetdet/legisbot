@@ -1,0 +1,2 @@
+class QAMapper:
+    pass

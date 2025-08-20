@@ -1,0 +1,2 @@
+class QARepository:
+    pass
