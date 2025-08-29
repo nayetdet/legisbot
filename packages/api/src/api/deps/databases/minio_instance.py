@@ -9,10 +9,11 @@ class MinioInstance:
     @classmethod
     def get_minio(cls) -> Minio:
         if cls.__minio is None:
+            parsed_inner_endpoint = urlparse(Config.MINIO_INNER_ENDPOINT)
             cls.__minio = Minio(
-                endpoint=Config.MINIO_INNER_ENDPOINT,
+                endpoint=parsed_inner_endpoint.netloc or parsed_inner_endpoint.path,
                 access_key=Config.MINIO_ACCESS_KEY,
                 secret_key=Config.MINIO_SECRET_KEY,
-                secure=urlparse(Config.MINIO_INNER_ENDPOINT).scheme == "https"
+                secure=parsed_inner_endpoint.scheme == "https"
             )
         return cls.__minio

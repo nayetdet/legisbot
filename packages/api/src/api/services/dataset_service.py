@@ -11,7 +11,7 @@ from api.services.minio_service import MinioService
 class DatasetService:
     @staticmethod
     def get_by_id(dataset_id: int) -> Optional[DatasetResponseSchema]:
-        dataset: Dataset = DatasetRepository.get_by_id(dataset_id)
+        dataset: Optional[Dataset] = DatasetRepository.get_by_id(dataset_id)
         if dataset is None:
             raise DatasetNotFoundException()
         return DatasetMapper.get_response_schema(dataset)
@@ -32,13 +32,3 @@ class DatasetService:
         except Exception as e:
             MinioService.delete_by_filename(filename)
             raise e
-
-    @staticmethod
-    def delete_by_id(dataset_id: int) -> None:
-        dataset: Dataset = DatasetRepository.get_by_id(dataset_id)
-        if dataset is None:
-            raise DatasetNotFoundException()
-
-        DatasetRepository.delete_by_dataset(dataset)
-        MinioService.delete_by_filename(dataset.name)
-        IngestService.delete_by_filename(dataset.name)

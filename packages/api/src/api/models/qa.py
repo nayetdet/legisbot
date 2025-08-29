@@ -5,4 +5,4 @@ class QA(BaseModel):
     __tablename__ = "qas"
 
     question = Column(String(500), nullable=False)
-    answer = Column(Text, nullable=False)
+    answer = Column(Text)

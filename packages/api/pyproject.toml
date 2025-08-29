@@ -9,12 +9,12 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.16.4",
-    "chromadb>=1.0.20",
     "fastapi>=0.116.1",
     "llama-index>=0.13.2",
     "llama-index-embeddings-ollama>=0.8.1",
     "llama-index-llms-ollama>=0.7.1",
-    "llama-index-vector-stores-chroma>=0.5.0",
+    "llama-index-storage-index-store-elasticsearch>=0.5.0",
+    "llama-index-vector-stores-elasticsearch>=0.5.0",
     "minio>=7.2.16",
     "psycopg2-binary>=2.9.10",
     "python-dotenv>=1.1.1",

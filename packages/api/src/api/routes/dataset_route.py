@@ -10,7 +10,3 @@ def get_by_id(dataset_id: int):
 @router.post("/")
 def create(file: UploadFile = File(...)):
     return DatasetService.create(file)
-
-@router.delete("/{dataset_id}")
-def delete_by_id(dataset_id: int):
-    DatasetService.delete_by_id(dataset_id)

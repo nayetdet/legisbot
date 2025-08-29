@@ -1,8 +1,5 @@
 from os import getenv
 from typing import List
-from dotenv import load_dotenv
-
-load_dotenv()
 
 class Config:
     # API
@@ -16,9 +13,8 @@ class Config:
     # PostgreSQL
     POSTGRES_HOST_URL: str = getenv("POSTGRES_HOST_URL")
 
-    # ChromaDB
-    CHROMA_HOST_URL: str = getenv("CHROMA_HOST_URL")
-    CHROMA_COLLECTION_NAME: str = getenv("CHROMA_COLLECTION_NAME")
+    # Elasticsearch
+    ELASTICSEARCH_HOST_URL: str = getenv("ELASTICSEARCH_HOST_URL")
 
     # MinIO
     MINIO_INNER_ENDPOINT: str = getenv("MINIO_INNER_ENDPOINT")

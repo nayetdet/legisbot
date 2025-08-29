@@ -37,16 +37,24 @@ services:
     volumes:
       - legisbot_minio_data:/data
 
-  chroma:
-    image: chromadb/chroma:latest
-    container_name: legisbot_chroma
+  elasticsearch:
+    image: elasticsearch:9.0.3
+    container_name: legisbot_elasticsearch
     ports:
-      - "8080:8000"
+      - "9200:9200"
     environment:
-      IS_PERSISTENT: TRUE
-      ANONYMIZED_TELEMETRY: FALSE
+      discovery.type: single-node
+      xpack.security.enabled: false
     volumes:
-      - legisbot_chroma_data:/chroma/.chroma
+      - legisbot_elasticsearch_data:/usr/share/elasticsearch/data
+
+  kibana:
+    image: kibana:9.0.3
+    container_name: legisbot_kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
 
   ollama:
     build:
@@ -56,7 +64,7 @@ services:
         OLLAMA_LLM_MODEL: hf.co/unsloth/gemma-3-270m-it-GGUF:Q4_K_M
         OLLAMA_EMBEDDING_MODEL: bge-m3:567m
     tty: true
-    container_name: legisbot_ollama_data
+    container_name: legisbot_ollama
     ports:
       - "11434:11434"
     volumes:
@@ -65,5 +73,5 @@ services:
 volumes:
   legisbot_postgres_data:
   legisbot_minio_data:
-  legisbot_chroma_data:
+  legisbot_elasticsearch_data:
   legisbot_ollama_data:

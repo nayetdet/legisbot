@@ -7,6 +7,7 @@ from api.deps.databases.minio_instance import MinioInstance
 class MinioService:
     @staticmethod
     def create(file: UploadFile) -> str:
+        file.file.seek(0)
         filename: str = f"{int(time() * 1000)}_{file.filename}"
         MinioInstance.get_minio().put_object(
             bucket_name=Config.MINIO_BUCKET,
