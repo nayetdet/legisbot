@@ -1,5 +1,7 @@
 FROM ollama/ollama:latest
+ARG OLLAMA_LLM_MODEL
+ARG OLLAMA_EMBEDDING_MODEL
 RUN nohup bash -c "ollama serve &" && \
     sleep 5 && \
-    ollama pull llama3.2:1b && \
-    ollama pull bge-m3:567m
+    ollama pull "${OLLAMA_LLM_MODEL}" && \
+    ollama pull "${OLLAMA_EMBEDDING_MODEL}"
