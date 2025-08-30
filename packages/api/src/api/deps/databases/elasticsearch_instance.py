@@ -7,7 +7,7 @@ from llama_index.vector_stores.elasticsearch import ElasticsearchStore
 from api.config import Config
 
 class ElasticsearchInstance:
-    __client: AsyncElasticsearch = AsyncElasticsearch(hosts=[Config.ELASTICSEARCH_HOST_URL])
+    __client: AsyncElasticsearch = AsyncElasticsearch(hosts=[Config.ELASTICSEARCH_HOST_URL], basic_auth=(Config.ELASTICSEARCH_USER, Config.ELASTICSEARCH_PASSWORD))
     __vector_store: ElasticsearchStore = ElasticsearchStore(es_client=__client, index_name="vectors", retrieval_strategy=AsyncDenseVectorStrategy())
     __index_store: ElasticsearchIndexStore = ElasticsearchIndexStore(ElasticsearchKVStore(es_client=__client, index_name="indexes"))
 

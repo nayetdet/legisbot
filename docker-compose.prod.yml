@@ -1,0 +1,159 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/uv/Dockerfile
+      args:
+        PACKAGE: api
+    container_name: legisbot_api
+    depends_on:
+      postgres:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+      minio:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    environment:
+      API_CORS_ORIGINS: ${API_CORS_ORIGINS}
+      POSTGRES_HOST_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/legisbot
+      ELASTICSEARCH_HOST_URL: http://elasticsearch:9200
+      ELASTICSEARCH_USER: ${ELASTICSEARCH_USER}
+      ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+      MINIO_INNER_ENDPOINT: http://minio:9000
+      MINIO_OUTER_ENDPOINT: ${MINIO_OUTER_ENDPOINT}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      OLLAMA_HOST_URL: http://ollama:11434
+      OLLAMA_LLM_MODEL: ${OLLAMA_LLM_MODEL}
+      OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL}
+    entrypoint: >
+      /bin/sh -c "
+        alembic -c packages/api/alembic.ini upgrade head
+        uvicorn app.packages.api.src.api.main:app \
+          --host 0.0.0.0 \
+          --port 8000 \
+          --root-path /api
+      "
+    restart: unless-stopped
+    networks:
+      - legisbot_api_postgres_network
+      - legisbot_api_elasticsearch_network
+      - legisbot_api_minio_network
+      - legisbot_api_ollama_network
+      - legisbot_api_webui_network
+
+  webui:
+    build:
+      context: .
+      dockerfile: ./docker/uv/Dockerfile
+      args:
+        PACKAGE: webui
+    container_name: legisbot_webui
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "8501:8501"
+    environment:
+      WEBUI_API_URL: http://api:8000
+    entrypoint: >
+      /bin/sh -c "
+        streamlit run app/packages/webui/src/webui/main.py \
+          --server.address=0.0.0.0 \
+          --server.port=8501
+      "
+    restart: unless-stopped
+    networks:
+      - legisbot_api_webui_network
+
+  postgres:
+    image: postgres:17
+    container_name: legisbot_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: legisbot
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - legisbot_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - legisbot_api_postgres_network
+
+  elasticsearch:
+    image: elasticsearch:9.0.3
+    container_name: legisbot_elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: true
+      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+    volumes:
+      - legisbot_elasticsearch_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    networks:
+      - legisbot_api_elasticsearch_network
+
+  minio:
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
+    container_name: legisbot_minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    entrypoint: >
+      /bin/sh -c '
+        isAlive() { curl -sf http://minio:9000/minio/health/live; }
+        minio $0 "$@" --quiet & echo $! > /tmp/minio.pid
+        until isAlive; do sleep 1; done
+        echo "MinIO is ready. Proceeding with setup..."
+        mc alias set myminio http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}
+        mc mb myminio/${MINIO_BUCKET} --ignore-existing
+        mc anonymous set public myminio/${MINIO_BUCKET}
+        kill -s INT $(cat /tmp/minio.pid) && rm /tmp/minio.pid
+        while isAlive; do sleep 0.1; done
+        exec minio $0 "$@"
+      '
+    command: server /data --console-address ":9001"
+    volumes:
+      - legisbot_minio_data:/data
+    restart: unless-stopped
+    networks:
+      - legisbot_api_minio_network
+
+  ollama:
+    build:
+      context: ./docker/ollama
+      dockerfile: Dockerfile
+      args:
+        OLLAMA_LLM_MODEL: ${OLLAMA_LLM_MODEL}
+        OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL}
+    tty: true
+    container_name: legisbot_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - legisbot_ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - legisbot_api_ollama_network
+
+volumes:
+  legisbot_postgres_data:
+  legisbot_elasticsearch_data:
+  legisbot_minio_data:
+  legisbot_ollama_data:
+
+networks:
+  legisbot_api_webui_network:
+  legisbot_api_postgres_network:
+  legisbot_api_elasticsearch_network:
+  legisbot_api_minio_network:
+  legisbot_api_ollama_network:

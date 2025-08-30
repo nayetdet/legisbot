@@ -5,16 +5,13 @@ class Config:
     # API
     API_CORS_ORIGINS: List[str] = [x.strip() for x in (getenv("API_CORS_ORIGINS") or "").split(",") if x.strip()]
 
-    # Ollama
-    OLLAMA_HOST_URL: str = getenv("OLLAMA_HOST_URL")
-    OLLAMA_LLM_MODEL: str = getenv("OLLAMA_LLM_MODEL")
-    OLLAMA_EMBEDDING_MODEL: str = getenv("OLLAMA_EMBEDDING_MODEL")
-
     # PostgreSQL
     POSTGRES_HOST_URL: str = getenv("POSTGRES_HOST_URL")
 
     # Elasticsearch
     ELASTICSEARCH_HOST_URL: str = getenv("ELASTICSEARCH_HOST_URL")
+    ELASTICSEARCH_USER: str = getenv("ELASTICSEARCH_USER")
+    ELASTICSEARCH_PASSWORD: str = getenv("ELASTICSEARCH_PASSWORD")
 
     # MinIO
     MINIO_INNER_ENDPOINT: str = getenv("MINIO_INNER_ENDPOINT")
@@ -22,3 +19,8 @@ class Config:
     MINIO_BUCKET: str = getenv("MINIO_BUCKET")
     MINIO_ACCESS_KEY: str = getenv("MINIO_ACCESS_KEY")
     MINIO_SECRET_KEY: str = getenv("MINIO_SECRET_KEY")
+
+    # Ollama
+    OLLAMA_HOST_URL: str = getenv("OLLAMA_HOST_URL")
+    OLLAMA_LLM_MODEL: str = getenv("OLLAMA_LLM_MODEL")
+    OLLAMA_EMBEDDING_MODEL: str = getenv("OLLAMA_EMBEDDING_MODEL")
